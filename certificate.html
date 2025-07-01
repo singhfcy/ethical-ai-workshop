@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Certificates & Toolkit</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #e6f0ff;
+      color: #333;
+    }
+    nav {
+      background: #003366;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    header {
+      background-color: #004080;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h2 {
+      color: #004080;
+    }
+    input, select, button {
+      font-size: 1rem;
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 400px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #004080;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #003366;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1rem;
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .error {
+      color: #b30000;
+      font-weight: bold;
+    }
+    .success {
+      color: #006600;
+      font-weight: bold;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="download.html">Download</a>
+    <a href="https://amity.edu/gwalior/paymentgateway/ETS2025" target="_blank">Registration</a>
+  </nav>
+
+  <header>
+    <h1>🎓 Download Certificate & Toolkit</h1>
+    <p>International Workshop on “The Ethical AI Toolkit for Scholars”</p>
+  </header>
+
+  <div class="container">
+    <p><strong>Please confirm you have filled the feedback form to continue:</strong></p>
+    <label>
+      <input type="checkbox" id="feedbackCheck"> Yes, I have submitted the feedback form.
+    </label>
+
+    <select id="certType" disabled>
+      <option value="participant">🎓 Individual Participation Certificate</option>
+      <option value="nodal">🏅 Nodal Coordinator Certificate</option>
+      <option value="booklet">📘 Download AI Toolkit Booklet</option>
+    </select>
+
+    <input type="text" id="nameInput" placeholder="Enter your full name" disabled>
+    <input type="email" id="emailInput" placeholder="(Optional) Enter your email" disabled>
+    <button onclick="searchCertificate()" disabled id="searchBtn">🔍 Search</button>
+
+    <div class="result" id="searchResult"></div>
+    <div class="note">🔒 Your information is used only to locate your certificate. No data is stored.</div>
+  </div>
+
+  <script>
+    let certificateData = { participant: [], nodal: [] };
+
+    Papa.parse("certificates/certificates.csv", {
+      download: true,
+      header: true,
+      complete: function(results) {
+        results.data.forEach(row => {
+          const entry = {
+            cert: row["Certificate No"],
+            name: row["Participant Name"].toLowerCase(),
+            email: row["Email"]?.toLowerCase() || '',
+            org: row["Organization Name"]
+          };
+          if (row["Type"] === "Participant") certificateData.participant.push(entry);
+          else if (row["Type"] === "Nodal") certificateData.nodal.push(entry);
+        });
+      }
+    });
+
+    document.getElementById("feedbackCheck").addEventListener("change", function () {
+      const enabled = this.checked;
+      document.getElementById("certType").disabled = !enabled;
+      document.getElementById("nameInput").disabled = !enabled;
+      document.getElementById("emailInput").disabled = !enabled;
+      document.getElementById("searchBtn").disabled = !enabled;
+    });
+
+    function searchCertificate() {
+      const name = document.getElementById("nameInput").value.trim().toLowerCase();
+      const email = document.getElementById("emailInput").value.trim().toLowerCase();
+      const certType = document.getElementById("certType").value;
+      const resultDiv = document.getElementById("searchResult");
+
+      if (certType === "booklet") {
+        resultDiv.innerHTML = `<div class='success'><a href="certificates/AI_Toolkit_Booklet.pdf" target="_blank">📘 Click here to download the AI Toolkit Booklet</a></div>`;
+        return;
+      }
+
+      if (!name && !email) {
+        resultDiv.innerHTML = "<div class='error'>❗ Please enter your name or email.</div>";
+        return;
+      }
+
+      const match = certificateData[certType].find(entry => {
+        return (entry.name === name || (email && entry.email === email));
+      });
+
+      if (match) {
+        const link = `certificates/${match.cert}.pdf`;
+        resultDiv.innerHTML = `<div class='success'><strong>${match.name}</strong> | ${match.org} <br><a href="${link}" target="_blank">📄 Download Certificate</a></div>`;
+      } else {
+        let reason = '';
+        if (certType === 'participant') {
+          reason = 'a) You have not registered / participated in the workshop';
+        } else if (certType === 'nodal') {
+          reason = 'b) You are not listed as a Nodal Coordinator';
+        } else if (certType === 'booklet') {
+          reason = 'c) AI Toolkit is not yet released or available';
+        }
+        resultDiv.innerHTML = `
+          <div class='error'>
+            ❌ <strong>Your ${certType === 'booklet' ? 'booklet' : 'certificate'} is not available.</strong><br><br>
+            Possible reason:<br>${reason}
+          </div>`;
+      }
+    }
+  </script>
+</body>
+</html>
