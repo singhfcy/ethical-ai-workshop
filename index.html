@@ -1,188 +1,119 @@
+
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Download Certificates & Toolkit</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-</head>
-<body>
-  <h1>Certificate Download System</h1>
-  <!-- Replace this with the latest HTML code for live use -->
-  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download Certificates & Toolkit</title>
+  <title>The Ethical AI Toolkit for Scholars – International Workshop</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      background: #e6f0ff;
+      background: #f5f9ff;
       color: #333;
     }
-    header {
-      background-color: #004080;
+    nav {
+      background: #003366;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    nav a {
       color: white;
-      padding: 30px 20px;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    header {
+      background: #004080;
+      color: white;
+      padding: 40px 20px;
       text-align: center;
     }
     header h1 {
-      margin-bottom: 10px;
+      margin: 0;
       font-size: 2rem;
     }
+    header h2 {
+      margin: 10px 0;
+      font-weight: normal;
+      font-size: 1.2rem;
+    }
     .container {
-      max-width: 700px;
-      margin: 40px auto;
+      max-width: 900px;
+      margin: 30px auto;
       background: white;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
     }
-    h2 {
+    h3 {
       color: #004080;
     }
-    input, select, button {
-      font-size: 1rem;
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 400px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    ul {
+      line-height: 1.8;
     }
-    button {
+    .button {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 20px;
       background-color: #004080;
       color: white;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s ease;
+      text-decoration: none;
+      border-radius: 6px;
     }
-    button:hover {
-      background-color: #003366;
-    }
-    .result {
-      margin-top: 20px;
-      font-size: 1rem;
-      background: #f8f8f8;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    .error {
-      color: #b30000;
-      font-weight: bold;
-    }
-    .success {
-      color: #006600;
-      font-weight: bold;
-    }
-    .note {
+    footer {
+      text-align: center;
+      padding: 20px;
       font-size: 0.9rem;
       color: #555;
-      margin-top: 10px;
     }
   </style>
 </head>
 <body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="download.html">Download</a>
+    <a href="https://amity.edu/gwalior/paymentgateway/ETS2025" target="_blank">Registration</a>
+  </nav>
+
   <header>
-    <h1>🎓 Download Certificate & Toolkit</h1>
-    <p>International Workshop on “The Ethical AI Toolkit for Scholars”</p>
+    <h1>The Ethical AI Toolkit for Scholars</h1>
+    <h2>An International Workshop organized by Department of Applied Chemistry,<br>Amity School of Engineering and Technology, Amity University Madhya Pradesh, Gwalior, India</h2>
   </header>
 
   <div class="container">
-    <p><strong>Please confirm you have filled the feedback form to continue:</strong></p>
-    <label>
-      <input type="checkbox" id="feedbackCheck"> Yes, I have submitted the feedback form.
-    </label>
+    <h3>About the Workshop</h3>
+    <p>This international workshop aims to introduce scholars, researchers, and faculty to a suite of cutting-edge AI tools that enhance scientific research and publishing. The session emphasizes ethical use of AI in literature review, writing, grant drafting, image generation, and presentation while addressing academic integrity, plagiarism concerns, and responsible AI practices.</p>
 
-    <select id="certType" disabled>
-      <option value="participant">🎓 Individual Participation Certificate</option>
-      <option value="nodal">🏅 Nodal Coordinator Certificate</option>
-      <option value="booklet">📘 Download AI Toolkit Booklet</option>
-    </select>
+    <h3>Date & Time</h3>
+    <ul>
+      <li><strong>Date:</strong> 6 August 2025</li>
+      <li><strong>Time:</strong> 10:00 AM – 4:00 PM IST</li>
+      <li><strong>Mode:</strong> Online (link will be shared upon registration)</li>
+    </ul>
 
-    <input type="text" id="nameInput" placeholder="Enter your full name" disabled>
-    <input type="email" id="emailInput" placeholder="(Optional) Enter your email" disabled>
-    <button onclick="searchCertificate()" disabled id="searchBtn">🔍 Search</button>
+    <h3>Tentative Schedule (IST)</h3>
+    <ul>
+      <li><strong>10:00–12:00:</strong> Lecture on 15+ AI tools for researchers + Ethical AI practices</li>
+      <li><strong>12:00–1:00:</strong> Industry Perspectives on AI in Research</li>
+      <li><strong>2:00–4:00:</strong> Hands-on Training on tools: Trinka, Scispace, Elicit, etc.</li>
+    </ul>
 
-    <div class="result" id="searchResult"></div>
-    <div class="note">🔒 Your information is used only to locate your certificate. No data is stored.</div>
+    <h3>Quick Links</h3>
+    <a href="https://amity.edu/gwalior/paymentgateway/ETS2025" class="button" target="_blank">🔗 Register Now</a>
+    <a href="download.html" class="button">📥 Download Certificate</a>
+    <a href="https://linktr.ee/researchtoolkit" class="button" target="_blank">🌐 Resource Toolkit</a>
+
+    <h3>Contact Us</h3>
+    <p>Email: <a href="mailto:events.chemistry@amity.edu">events.chemistry@amity.edu</a></p>
   </div>
 
-  <script>
-    let certificateData = { participant: [], nodal: [] };
-
-    Papa.parse("certificates/certificates.csv", {
-      download: true,
-      header: true,
-      complete: function(results) {
-        results.data.forEach(row => {
-          const entry = {
-            cert: row["Certificate No"],
-            name: row["Participant Name"].toLowerCase(),
-            email: row["Email"]?.toLowerCase() || '',
-            org: row["Organization Name"]
-          };
-          if (row["Type"] === "Participant") certificateData.participant.push(entry);
-          else if (row["Type"] === "Nodal") certificateData.nodal.push(entry);
-        });
-      }
-    });
-
-    document.getElementById("feedbackCheck").addEventListener("change", function () {
-      const enabled = this.checked;
-      document.getElementById("certType").disabled = !enabled;
-      document.getElementById("nameInput").disabled = !enabled;
-      document.getElementById("emailInput").disabled = !enabled;
-      document.getElementById("searchBtn").disabled = !enabled;
-    });
-
-    function searchCertificate() {
-      const name = document.getElementById("nameInput").value.trim().toLowerCase();
-      const email = document.getElementById("emailInput").value.trim().toLowerCase();
-      const certType = document.getElementById("certType").value;
-      const resultDiv = document.getElementById("searchResult");
-
-      if (certType === "booklet") {
-        resultDiv.innerHTML = `<div class='success'><a href="certificates/AI_Toolkit_Booklet.pdf" target="_blank">📘 Click here to download the AI Toolkit Booklet</a></div>`;
-        return;
-      }
-
-      if (!name && !email) {
-        resultDiv.innerHTML = "<div class='error'>❗ Please enter your name or email.</div>";
-        return;
-      }
-
-      const match = certificateData[certType].find(entry => {
-        return (entry.name === name || (email && entry.email === email));
-      });
-
-      if (match) {
-        const link = `certificates/${match.cert}.pdf`;
-        resultDiv.innerHTML = `<div class='success'><strong>${match.name}</strong> | ${match.org} <br><a href="${link}" target="_blank">📄 Download Certificate</a></div>`;
-      } else {
-        resultDiv.innerHTML = `
-          <div class='error'>
-            ❌ <strong>Your certificate is not available.</strong><br><br>
-            Possible reasons:<br>
-            a) You have not registered / participated in the workshop<br>
-            b) You are not listed as a Nodal Coordinator<br>
-            c) AI Toolkit is not yet released or available
-          </div>`;
-      }
-    }
-  </script>
-</body>
-</html>
-
-
-
-  
+  <footer>
+    &copy; 2025 Amity University Madhya Pradesh | Department of Applied Chemistry
+  </footer>
 </body>
 </html>
