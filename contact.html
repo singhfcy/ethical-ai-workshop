@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us – The Ethical AI Toolkit Workshop</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f5f9ff;
+      color: #333;
+    }
+    nav {
+      background: #003366;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    header {
+      background: #004080;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #004080;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="download.html">Download</a>
+    <a href="https://amity.edu/gwalior/paymentgateway/ETS2025" target="_blank">Registration</a>
+    <a href="faq.html">FAQs</a>
+    <a href="contact.html">Contact Us</a>
+  </nav>
+
+  <header>
+    <h1>Contact Us</h1>
+    <h2>Reach out with your queries, suggestions, or feedback</h2>
+  </header>
+
+  <div class="container">
+    <form action="https://formspree.io/f/moqgnqgk" method="POST">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">Your Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="6" required></textarea>
+
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
+
+  <footer>
+    Email: <a href="mailto:events.chemistry@amity.edu">events.chemistry@amity.edu</a><br>
+    &copy; 2025 Amity University Madhya Pradesh | Department of Applied Chemistry
+  </footer>
+</body>
+</html>
