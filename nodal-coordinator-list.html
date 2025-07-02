@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nodal Coordinators List</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f2f7fb;
+      color: #333;
+    }
+    nav {
+      background: #003366;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    header {
+      background: #004080;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .register-button {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .register-button a {
+      background: #004080;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .register-button a:hover {
+      background: #0055aa;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #004080;
+      color: white;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="download.html">Download</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="nodal-coordinator-list.html">Nodal Coordinator List</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <header>
+    <h1>Registered Nodal Coordinators</h1>
+    <p>Faculty members helping coordinate registrations</p>
+  </header>
+
+  <div class="container">
+    <div class="register-button">
+      <a href="https://forms.gle/KQkJmS93r7WGdH3H8" target="_blank">Register as Nodal Coordinator</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>S.No.</th>
+          <th>Name</th>
+          <th>Institute / University</th>
+          <th>Registration Status</th>
+        </tr>
+      </thead>
+      <tbody id="nodalTable">
+        <tr><td colspan="4">Loading data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    &copy; 2025 Amity University Madhya Pradesh | Department of Applied Chemistry
+  </footer>
+
+  <script>
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7eqGsKvlhBHZMj3r6p1I-IzKH7Picc2j570S6IGy3bbDHox0OAL39-E1p2KS0epDYFPN59YIIMAY1/pub?gid=0&single=true&output=csv';
+
+    Papa.parse(sheetURL, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const table = document.getElementById('nodalTable');
+        table.innerHTML = '';
+        results.data.forEach((row, i) => {
+          if (row['Name']) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${i + 1}</td>
+              <td>${row['Name']}</td>
+              <td>${row['Institute'] || row['Institute / University']}</td>
+              <td>${row['Registration Status'] || 'Confirmed'}</td>
+            `;
+            table.appendChild(tr);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
