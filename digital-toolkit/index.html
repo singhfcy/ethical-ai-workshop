@@ -64,6 +64,12 @@
       margin-top: 20px;
       font-weight: bold;
     }
+    .status-success {
+      color: green;
+    }
+    .status-error {
+      color: red;
+    }
     footer {
       text-align: center;
       font-size: 0.85rem;
@@ -115,7 +121,7 @@
   </div>
 
   <footer>
-    &copy; 2025 EDOI.org | Powered by Amity University Madhya Pradesh
+    &copy; 2025 Department of Applied Chemistry, Amity University Madhya Pradesh
   </footer>
 
   <script>
@@ -138,17 +144,23 @@
     document.getElementById('toolkitForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
-      fetch("YOUR_GOOGLE_APPS_SCRIPT_DEPLOYMENT_URL", {
+      fetch("https://script.google.com/macros/s/AKfycbx08b6uHk8Qifj03syHdeenz15GxIIYRP-zuPCem_wwArm07bG8iv6No2K97NArgRizUw/exec", {
         method: "POST",
         body: formData
-      }).then(response => {
-        if (response.ok) {
-          document.getElementById('formStatus').textContent = "✅ Toolkit access link has been shared with your Gmail.";
+      }).then(response => response.text()).then(text => {
+        const statusDiv = document.getElementById('formStatus');
+        if (text.includes("Success")) {
+          statusDiv.textContent = "✅ Toolkit access has been shared to your Gmail.";
+          statusDiv.className = "status-message status-success";
+          document.getElementById("toolkitForm").reset();
         } else {
-          document.getElementById('formStatus').textContent = "❌ Submission failed. Please try again.";
+          statusDiv.textContent = "❌ " + text;
+          statusDiv.className = "status-message status-error";
         }
       }).catch(() => {
-        document.getElementById('formStatus').textContent = "⚠️ Network error. Please check your connection.";
+        const statusDiv = document.getElementById('formStatus');
+        statusDiv.textContent = "⚠️ Network error. Please try again later.";
+        statusDiv.className = "status-message status-error";
       });
     });
   </script>
