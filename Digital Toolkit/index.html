@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Digital Toolkit</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f2f7ff;
+      color: #333;
+    }
+    nav {
+      background: #003366;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    header {
+      background: #004080;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    }
+    form label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    input[readonly] {
+      background: #eee;
+    }
+    button {
+      background-color: #004080;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .status-message {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #666;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="download.html">Download</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <header>
+    <h1>Download Digital AI Toolkit</h1>
+    <p>Sign in with your Gmail to access the toolkit securely</p>
+  </header>
+
+  <div class="container">
+    <div id="g_id_onload"
+         data-client_id="1050690553370-uflo9ma3hvq4qgp5s9l35637ijt2ujh7.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin" data-type="standard" data-theme="outline" data-size="large"></div>
+
+    <form id="toolkitForm" style="display:none">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="affiliation">Affiliation</label>
+      <input type="text" id="affiliation" name="affiliation" required>
+
+      <label for="registeredEmail">Registered Email ID</label>
+      <input type="email" id="registeredEmail" name="registeredEmail" required>
+
+      <label for="gmail">Google Account (Gmail)</label>
+      <input type="email" id="gmail" name="gmail" readonly required>
+
+      <label for="whatsapp">WhatsApp Number</label>
+      <input type="text" id="whatsapp" name="whatsapp" required>
+
+      <button type="submit">Submit & Request Toolkit</button>
+      <div id="formStatus" class="status-message"></div>
+    </form>
+  </div>
+
+  <footer>
+    &copy; 2025 EDOI.org | Powered by Amity University Madhya Pradesh
+  </footer>
+
+  <script>
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+
+    function handleCredentialResponse(response) {
+      const data = parseJwt(response.credential);
+      document.getElementById('gmail').value = data.email;
+      document.querySelector('.g_id_signin').style.display = 'none';
+      document.getElementById('toolkitForm').style.display = 'block';
+    }
+
+    document.getElementById('toolkitForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch("YOUR_GOOGLE_APPS_SCRIPT_DEPLOYMENT_URL", {
+        method: "POST",
+        body: formData
+      }).then(response => {
+        if (response.ok) {
+          document.getElementById('formStatus').textContent = "✅ Toolkit access link has been shared with your Gmail.";
+        } else {
+          document.getElementById('formStatus').textContent = "❌ Submission failed. Please try again.";
+        }
+      }).catch(() => {
+        document.getElementById('formStatus').textContent = "⚠️ Network error. Please check your connection.";
+      });
+    });
+  </script>
+</body>
+</html>
