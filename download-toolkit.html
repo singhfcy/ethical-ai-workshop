@@ -64,6 +64,8 @@
       margin-top: 20px;
       font-weight: bold;
     }
+    .status-success { color: green; }
+    .status-error { color: red; }
     footer {
       text-align: center;
       font-size: 0.85rem;
@@ -106,8 +108,8 @@
       <label for="gmail">Google Account (Gmail)</label>
       <input type="email" id="gmail" name="gmail" readonly required>
 
-      <label for="whatsapp">WhatsApp Number</label>
-      <input type="text" id="whatsapp" name="whatsapp" required>
+      <label for="whatsapp">WhatsApp Number <small>(10-digit Indian number starting with 6–9)</small></label>
+      <input type="text" id="whatsapp" name="whatsapp" placeholder="e.g. 9876543210" required>
 
       <button type="submit">Submit & Request Toolkit</button>
       <div id="formStatus" class="status-message"></div>
@@ -122,9 +124,9 @@
     function parseJwt(token) {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join(''));
       return JSON.parse(jsonPayload);
     }
 
@@ -138,19 +140,42 @@
     document.getElementById('toolkitForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
+
+      // Client-side validations
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const whatsappRegex = /^[6-9]\d{9}$/;
+
+      const regEmail = document.getElementById('registeredEmail').value.trim();
+      const whatsapp = document.getElementById('whatsapp').value.trim();
+
+      if (!emailRegex.test(regEmail)) {
+        showStatus("Invalid Registered Email format.", false);
+        return;
+      }
+      if (!whatsappRegex.test(whatsapp)) {
+        showStatus("Invalid WhatsApp number. Must be 10 digits starting with 6–9.", false);
+        return;
+      }
+
       fetch("https://script.google.com/macros/s/AKfycbx08b6uHk8Qifj03syHdeenz15GxIIYRP-zuPCem_wwArm07bG8iv6No2K97NArgRizUw/exec", {
         method: "POST",
         body: formData
-      }).then(response => {
-        if (response.ok) {
-          document.getElementById('formStatus').textContent = "✅ Toolkit access link has been shared with your Gmail.";
+      }).then(r => r.text()).then(res => {
+        if (res.includes("Success")) {
+          showStatus("✅ Toolkit access shared to your Gmail.", true);
+          this.reset();
+          setTimeout(() => window.location.href = "thank-you.html", 2500);
         } else {
-          document.getElementById('formStatus').textContent = "❌ Submission failed. Please try again.";
+          showStatus("❌ " + res, false);
         }
-      }).catch(() => {
-        document.getElementById('formStatus').textContent = "⚠️ Network error. Please check your connection.";
-      });
+      }).catch(() => showStatus("⚠️ Network error. Please try again.", false));
     });
+
+    function showStatus(message, success) {
+      const statusDiv = document.getElementById('formStatus');
+      statusDiv.textContent = message;
+      statusDiv.className = "status-message " + (success ? "status-success" : "status-error");
+    }
   </script>
 </body>
 </html>
