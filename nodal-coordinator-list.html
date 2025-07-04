@@ -137,7 +137,7 @@
               <td>${i + 1}</td>
               <td>${row['Name']}</td>
               <td>${row['Institute'] || row['Institute / University']}</td>
-              <td>${row['Registration Status'] || 'Confirmed'}</td>
+              <td>${row['Registration Status'] || row['Status']}</td>
             `;
             table.appendChild(tr);
           }
