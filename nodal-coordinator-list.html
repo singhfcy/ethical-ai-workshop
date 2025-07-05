@@ -1,6 +1,3 @@
-//nodal-coordinator-list.html
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,12 +33,27 @@
       text-align: center;
     }
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 30px auto;
       background: white;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .highlight-row {
+      background-color: #fff3cd !important;
+    }
+    .summary {
+      background: #eef6ff;
+      border-left: 6px solid #004080;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .intro {
+      margin-bottom: 20px;
+      background: #eaf2fb;
+      padding: 15px;
+      border-left: 6px solid #004080;
     }
     .register-button {
       text-align: center;
@@ -58,6 +70,16 @@
     .register-button a:hover {
       background: #0055aa;
     }
+    .refresh-btn {
+      background: #999;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      margin-top: 5px;
+      border-radius: 4px;
+      color: white;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -71,6 +93,37 @@
     th {
       background: #004080;
       color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f0f4f9;
+    }
+    tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .pending { background-color: #f7b731; color: white; }
+    .registered { background-color: #27ae60; color: white; }
+    .not-registered { background-color: #c0392b; color: white; }
+    #counter {
+      margin: 10px auto;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    #search {
+      margin: 10px auto;
+      display: block;
+      width: 90%;
+      max-width: 500px;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     footer {
       text-align: center;
@@ -98,9 +151,28 @@
   </header>
 
   <div class="container">
+    <div class="intro">
+      <p><strong>About the Nodal Coordinator Program:</strong><br>
+      Nodal Coordinators are faculty members from various institutions who help facilitate registrations and participation for the International Workshop on “The Ethical AI Toolkit for Scholars.”</p>
+      <p><strong>Requirements:</strong><br>
+      - Register yourself using the main registration form<br>
+      - Ensure 10 or more students from your institute register individually<br>
+      - Share the list of registered participants via email after crossing the threshold</p>
+      <p><strong>Benefits:</strong><br>
+      - Nodal Coordinator Certificate<br>
+      - Recognition on our website<br>
+      - Surprise AI Toolkit access</p>
+    </div>
+
+    <div class="summary" id="summary"></div>
+
     <div class="register-button">
       <a href="https://forms.gle/KQkJmS93r7WGdH3H8" target="_blank">Register as Nodal Coordinator</a>
+      <button class="refresh-btn" onclick="loadData()">🔁 Refresh</button>
     </div>
+
+    <div id="counter">Registered Coordinators: <span id="countNum">0</span></div>
+    <input type="text" id="search" placeholder="🔍 Search by name or institute..." onkeyup="filterTable()">
 
     <table>
       <thead>
@@ -109,11 +181,12 @@
           <th>Name</th>
           <th>Institute / University</th>
           <th>Own Registration</th>
-          <th>Registration Status</th>
+          <th>Status</th>
+          <th>Upload Updated List</th>
         </tr>
       </thead>
       <tbody id="nodalTable">
-        <tr><td colspan="4">Loading data...</td></tr>
+        <tr><td colspan="6">Loading data...</td></tr>
       </tbody>
     </table>
   </div>
@@ -125,27 +198,77 @@
   <script>
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7eqGsKvlhBHZMj3r6p1I-IzKH7Picc2j570S6IGy3bbDHox0OAL39-E1p2KS0epDYFPN59YIIMAY1/pub?gid=0&single=true&output=csv';
 
-    Papa.parse(sheetURL, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const table = document.getElementById('nodalTable');
-        table.innerHTML = '';
-        results.data.forEach((row, i) => {
-          if (row['Name']) {
+    function loadData() {
+      const table = document.getElementById('nodalTable');
+      table.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+      let registeredCount = 0, confirmedCount = 0, deniedCount = 0, total = 0;
+
+      Papa.parse(sheetURL, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          table.innerHTML = '';
+          const filtered = results.data.filter(r => r['Name']);
+          filtered.sort((a, b) => a['Name'].localeCompare(b['Name']));
+          total = filtered.length;
+
+          filtered.forEach((row, i) => {
+            const name = row['Name'];
+            const institute = row['Institute'] || row['Institute / University'] || '—';
+            const ownReg = row['Own Registration']?.toLowerCase().trim();
+            let status = row['Registration Status'] || row['Status'] || 'Pending';
+            let badgeClass = 'pending';
+
+            if (!status || status.toLowerCase().includes('not')) {
+              status = 'Not Registered';
+              badgeClass = 'not-registered';
+              deniedCount++;
+            } else if (status.toLowerCase().includes('confirmed')) {
+              badgeClass = 'registered';
+              confirmedCount++;
+            } else if (status.toLowerCase().includes('registered')) {
+              badgeClass = 'registered';
+              registeredCount++;
+            }
+
+            const uploadLink = `<a href="https://drive.google.com/drive/folders/1WNy1f0sdX2FX47YscijKqCCXzHMzlAH3" target="_blank">Upload</a>`;
+            const registrationCell = (ownReg && (ownReg === 'yes' || ownReg === 'registered'))
+              ? row['Own Registration']
+              : `<a href='https://amity.edu/gwalior/paymentgateway/ETS2025' target='_blank'><button style='padding:5px 10px; background:#004080; color:white; border:none; border-radius:4px;'>Complete Your Registration</button></a>`;
+
             const tr = document.createElement('tr');
+            if (!ownReg || ownReg === 'no') tr.classList.add('highlight-row');
             tr.innerHTML = `
               <td>${i + 1}</td>
-              <td>${row['Name']}</td>
-              <td>${row['Institute'] || row['Institute / University']}</td>
-              <td>${row['Own Registration'] || row['Own Registration']}</td>
-              <td>${row['Registration Status'] || row['Status']}</td>
+              <td>${name}</td>
+              <td>${institute}</td>
+              <td>${registrationCell}</td>
+              <td><span class="badge ${badgeClass}">${status}</span></td>
+              <td>${uploadLink}</td>
             `;
             table.appendChild(tr);
-          }
-        });
-      }
-    });
+          });
+
+          document.getElementById('countNum').textContent = registeredCount;
+          document.getElementById('summary').innerHTML = `
+            <strong>Total Applied:</strong> ${total} &nbsp; | 
+            <strong>Registered:</strong> ${registeredCount} &nbsp; | 
+            <strong>Confirmed:</strong> ${confirmedCount} &nbsp; | 
+            <strong>Cancelled/Denied:</strong> ${deniedCount}`;
+        }
+      });
+    }
+
+    function filterTable() {
+      const input = document.getElementById('search').value.toLowerCase();
+      const rows = document.querySelectorAll('#nodalTable tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(input) ? '' : 'none';
+      });
+    }
+
+    loadData();
   </script>
 </body>
 </html>
