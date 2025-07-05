@@ -43,6 +43,9 @@
     .success {
       color: green;
     }
+    .switch-button {
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
@@ -51,7 +54,9 @@
     <div id="g_id_onload"
          data-client_id="1050690553370-fvm667egoh6dic3hhn9j72bgh7r2p5sl.apps.googleusercontent.com"
          data-auto_prompt="false"
-         data-callback="handleSignIn">
+         data-callback="handleSignIn"
+         data-context="use"
+         data-ux_mode="popup">
     </div>
     <div class="g_id_signin"
          data-type="standard"
@@ -63,6 +68,10 @@
 
     <div id="status"></div>
     <div id="link"></div>
+
+    <div class="switch-button">
+      <button onclick="google.accounts.id.prompt()">🔄 Switch Account</button>
+    </div>
   </div>
 
   <script>
