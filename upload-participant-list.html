@@ -1,56 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload Participant List</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nodal Coordinators List</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f4f8fb;
       margin: 0;
-      padding: 2rem;
+      background: #f2f7fb;
+      color: #333;
+    }
+    nav {
+      background: #003366;
+      padding: 10px;
       text-align: center;
     }
-    h1 {
-      color: #004080;
-    }
-    .container {
-      background: white;
-      max-width: 700px;
-      margin: auto;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    #status {
-      margin-top: 1rem;
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
       font-weight: bold;
     }
-    a.sheet-link {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 10px 16px;
-      background-color: #004080;
+    nav a:hover {
+      text-decoration: underline;
+    }
+    header {
+      background: #004080;
       color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+    .highlight-row {
+      background-color: #fff3cd !important;
+    }
+    .summary {
+      background: #eef6ff;
+      border-left: 6px solid #004080;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .intro {
+      margin-bottom: 20px;
+      background: #eaf2fb;
+      padding: 15px;
+      border-left: 6px solid #004080;
+    }
+    .register-button {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .register-button a {
+      background: #004080;
+      color: white;
+      padding: 10px 20px;
       text-decoration: none;
       border-radius: 6px;
-    }
-    .error { color: red; }
-    .success { color: green; }
-    .switch-button { margin-top: 2rem; }
-    .user-info {
-      margin-top: 1rem;
       font-size: 1rem;
-      background: #eef6ff;
-      padding: 1rem;
+    }
+    .register-button a:hover {
+      background: #0055aa;
+    }
+    .refresh-btn {
+      background: #999;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      margin-top: 5px;
+      border-radius: 4px;
+      color: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #004080;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f0f4f9;
+    }
+    tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .pending { background-color: #f7b731; color: white; }
+    .registered { background-color: #27ae60; color: white; }
+    .not-registered { background-color: #c0392b; color: white; }
+    #counter {
+      margin: 10px auto;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    #search {
+      margin: 10px auto;
+      display: block;
+      width: 90%;
+      max-width: 500px;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
       border-radius: 6px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #555;
     }
   </style>
 </head>
-
 <body>
   <nav>
     <a href="index.html">Home</a>
@@ -63,11 +145,11 @@
   </nav>
 
   <header>
-    <h2>The Ethical AI Toolkit for Scholars</h2>
-    
-    <p>Upload details of Registered articipants through Nodal Center</p>
+    <h1>The Ethical AI Toolkit for Scholars</h1>
+    <h2>Registered Nodal Coordinators</h2>
+    <p>Faculty members helping coordinate registrations</p>
   </header>
-  
+
   <div class="container">
     <h1>Upload Participant List</h1>
 
