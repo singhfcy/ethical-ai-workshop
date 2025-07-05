@@ -41,7 +41,13 @@
     .error { color: red; }
     .success { color: green; }
     .switch-button { margin-top: 2rem; }
-    .user-info { margin-top: 1rem; font-size: 1rem; background: #eef6ff; padding: 1rem; border-radius: 6px; }
+    .user-info {
+      margin-top: 1rem;
+      font-size: 1rem;
+      background: #eef6ff;
+      padding: 1rem;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
@@ -109,7 +115,8 @@
                 idToken: idToken,
                 name: "",
                 affiliation: "",
-                unauthorized: "true"
+                unauthorized: "true",
+                email: gmail
               })
             });
           }
