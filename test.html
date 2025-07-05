@@ -204,9 +204,12 @@
       let registeredCount = 0, confirmedCount = 0, deniedCount = 0, total = 0, ownRegistered = 0;
 
       Papa.parse(sheetURL, {
-        download: true,
-        header: true,
-        complete: function(results) {
+  download: true,
+  header: true,
+  complete: function(results) {
+    const data = results.data.filter(r => r["Name"]);
+    updateSummaryFromData(data);
+    
           table.innerHTML = '';
           const filtered = results.data.filter(r => r['Name']);
           filtered.sort((a, b) => a['Name'].localeCompare(b['Name']));
@@ -309,6 +312,52 @@
       const win = window.open(url, '_blank');
       if (win) win.focus();
     }
+  </script>
+  <script>
+
+    function updateSummaryFromData(data) {
+  let total = 0;
+  let registered = 0;
+  let confirmed = 0;
+  let cancelledDenied = 0;
+
+  data.forEach(row => {
+    const name = row["Name"];
+    const ownReg = row["Own Registration"]?.toLowerCase().trim();
+    const status = (row["Registration Status"] || row["Status"] || "").toLowerCase().trim();
+
+    if (name) {
+      total++;
+
+      if (ownReg && ownReg.includes("registered")) {
+        registered++;
+      }
+
+      if (status.includes("confirmed")) {
+        confirmed++;
+      }
+
+      if (status.includes("cancelled") || status.includes("denied")) {
+        cancelledDenied++;
+      }
+    }
+  });
+
+  // Set values in HTML
+  const summary = document.getElementById("summary");
+  if (summary) {
+    summary.innerHTML = `
+      <strong>Total Applied:</strong> ${total} &nbsp; | 
+      <strong>Registered:</strong> ${registered} &nbsp; | 
+      <strong>Confirmed:</strong> ${confirmed} &nbsp; | 
+      <strong>Cancelled/Denied:</strong> ${cancelledDenied}
+    `;
+  }
+
+  const countNum = document.getElementById("countNum");
+  if (countNum) countNum.textContent = registered;
+}
+
   </script>
 </body>
 </html>
