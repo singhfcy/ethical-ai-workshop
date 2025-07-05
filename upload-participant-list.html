@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload Participant List</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -18,7 +19,7 @@
     }
     .container {
       background: white;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       padding: 2rem;
       border-radius: 8px;
@@ -37,20 +38,16 @@
       text-decoration: none;
       border-radius: 6px;
     }
-    .error {
-      color: red;
-    }
-    .success {
-      color: green;
-    }
-    .switch-button {
-      margin-top: 2rem;
-    }
+    .error { color: red; }
+    .success { color: green; }
+    .switch-button { margin-top: 2rem; }
+    .user-info { margin-top: 1rem; font-size: 1rem; background: #eef6ff; padding: 1rem; border-radius: 6px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Upload Participant List</h1>
+
     <div id="g_id_onload"
          data-client_id="1050690553370-fvm667egoh6dic3hhn9j72bgh7r2p5sl.apps.googleusercontent.com"
          data-auto_prompt="false"
@@ -66,6 +63,7 @@
          data-shape="pill">
     </div>
 
+    <div class="user-info" id="userInfo" style="display:none"></div>
     <div id="status"></div>
     <div id="link"></div>
 
@@ -75,12 +73,59 @@
   </div>
 
   <script>
+    const csvURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7eqGsKvlhBHZMj3r6p1I-IzKH7Picc2j570S6IGy3bbDHox0OAL39-E1p2KS0epDYFPN59YIIMAY1/pub?gid=0&single=true&output=csv";
+
     function handleSignIn(response) {
       const idToken = response.credential;
+      const tokenURL = "https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken;
+      fetch(tokenURL)
+        .then(res => res.json())
+        .then(user => {
+          const gmail = user.email.toLowerCase();
+          fetchCSVAndValidate(gmail, idToken);
+        })
+        .catch(err => showError("Failed to verify Google login."));
+    }
+
+    function fetchCSVAndValidate(gmail, idToken) {
+      Papa.parse(csvURL, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          const match = results.data.find(row => (row["Gmail ID"] || "").toLowerCase().trim() === gmail);
+          if (match) {
+            const name = match["Name"] || "";
+            const institute = match["Institute / University"] || "";
+            document.getElementById("userInfo").style.display = "block";
+            document.getElementById("userInfo").innerHTML = `👤 <b>${name}</b><br>🏫 ${institute}<br>📧 ${gmail}`;
+            requestSheet(idToken, name, institute);
+          } else {
+            showError("❌ This Gmail ID is not authorized as a Nodal Coordinator.");
+            // Send unauthorized access to dashboard
+            fetch("https://script.google.com/macros/s/AKfycbxDLwtIKcSp6AmV-tPvYEde_MLih-InXhNPUYKAk7MyUbXDR8_AnMcCGlZToHnt9F_9/exec", {
+              method: "POST",
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({
+                idToken: idToken,
+                name: "",
+                affiliation: "",
+                unauthorized: "true"
+              })
+            });
+          }
+        }
+      });
+    }
+
+    function requestSheet(idToken, name, institute) {
       fetch("https://script.google.com/macros/s/AKfycbxDLwtIKcSp6AmV-tPvYEde_MLih-InXhNPUYKAk7MyUbXDR8_AnMcCGlZToHnt9F_9/exec", {
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: "idToken=" + encodeURIComponent(idToken)
+        body: new URLSearchParams({
+          idToken: idToken,
+          name: name,
+          affiliation: institute
+        })
       })
       .then(res => res.json())
       .then(data => {
@@ -89,14 +134,16 @@
           document.getElementById("status").className = "success";
           document.getElementById("link").innerHTML = `<a class="sheet-link" href="${data.url}" target="_blank">Open Your Participant Sheet</a>`;
         } else {
-          document.getElementById("status").innerHTML = `❌ ${data.message}`;
-          document.getElementById("status").className = "error";
+          showError(data.message);
         }
       })
-      .catch(err => {
-        document.getElementById("status").innerHTML = `❌ Error: ${err.message}`;
-        document.getElementById("status").className = "error";
-      });
+      .catch(err => showError("Network error. Please try again."));
+    }
+
+    function showError(msg) {
+      document.getElementById("status").innerHTML = msg;
+      document.getElementById("status").className = "error";
+      document.getElementById("link").innerHTML = "";
     }
   </script>
 </body>
