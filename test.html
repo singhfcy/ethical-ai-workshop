@@ -231,7 +231,7 @@
               registeredCount++;
             }
 
-            const uploadLink = `<a href="https://drive.google.com/drive/folders/1WNy1f0sdX2FX47YscijKqCCXzHMzlAH3" target="_blank">Upload</a>`;
+            const uploadLink = `<button onclick=\"openUploadPopup('${row['Gmail ID'] || ''}')\" style=\"padding:5px 10px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;\">Upload Sheet</button>`;
             const registrationCell = (ownReg && (ownReg === 'yes' || ownReg === 'registered'))
               ? row['Own Registration']
               : `<a href='https://amity.edu/gwalior/paymentgateway/ETS2025' target='_blank'><button style='padding:5px 10px; background:#004080; color:white; border:none; border-radius:4px;'>Complete Your Registration</button></a>`;
@@ -269,6 +269,12 @@
     }
 
     loadData();
+
+    function openUploadPopup(gmail) {
+      const url = 'upload-participant-list.html' + (gmail ? `?email=${encodeURIComponent(gmail)}` : '');
+      const win = window.open(url, '_blank');
+      if (win) win.focus();
+    }
   </script>
 </body>
 </html>
