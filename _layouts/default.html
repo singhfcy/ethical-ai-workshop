@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title }} | Ethical AI Workshop</title>
+
+  <!-- Add stylesheets if any -->
+  <link rel="stylesheet" href="/assets/style.css" />
+
+  {% include analytics.html %}
+</head>
+<body>
+  <header>
+    <h1>Ethical AI Workshop</h1>
+    <nav>
+      <!-- Navigation if needed -->
+    </nav>
+  </header>
+
+  <main>
+    {{ content }}
+  </main>
+
+  <footer>
+    <p>&copy; {{ site.time | date: "%Y" }} Ethical AI Workshop</p>
+  </footer>
+</body>
+</html>
+
