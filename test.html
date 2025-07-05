@@ -201,7 +201,7 @@
     function loadData() {
       const table = document.getElementById('nodalTable');
       table.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
-      let registeredCount = 0, confirmedCount = 0, deniedCount = 0, total = 0;
+      let registeredCount = 0, confirmedCount = 0, deniedCount = 0, total = 0, ownRegistered = 0;
 
       Papa.parse(sheetURL, {
         download: true,
@@ -230,8 +230,11 @@
               badgeClass = 'registered';
               registeredCount++;
             }
+            if (ownReg && ownReg.includes('registered')) {
+              ownRegistered++;
+            }
 
-            const uploadLink = `<button onclick=\"openUploadPopup('${row['Gmail ID'] || ''}')\" style=\"padding:5px 10px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;\">Upload Sheet</button>`;
+            const uploadLink = `<button onclick=\"openUploadModal('${row['Gmail ID'] || ''}')\" style=\"padding:5px 10px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer;\">Upload Sheet</button>`;
             const registrationCell = (ownReg && (ownReg === 'yes' || ownReg === 'registered'))
               ? row['Own Registration']
               : `<a href='https://amity.edu/gwalior/paymentgateway/ETS2025' target='_blank'><button style='padding:5px 10px; background:#004080; color:white; border:none; border-radius:4px;'>Complete Your Registration</button></a>`;
@@ -252,7 +255,7 @@
           document.getElementById('countNum').textContent = registeredCount;
           document.getElementById('summary').innerHTML = `
             <strong>Total Applied:</strong> ${total} &nbsp; | 
-            <strong>Registered:</strong> ${registeredCount} &nbsp; | 
+            <strong>Registered (Own):</strong> ${ownRegistered} &nbsp; | 
             <strong>Confirmed:</strong> ${confirmedCount} &nbsp; | 
             <strong>Cancelled/Denied:</strong> ${deniedCount}`;
         }
@@ -270,8 +273,39 @@
 
     loadData();
 
-    function openUploadPopup(gmail) {
+    function openUploadModal(gmail) {
       const url = 'upload-participant-list.html' + (gmail ? `?email=${encodeURIComponent(gmail)}` : '');
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.style.position = 'fixed';
+      iframe.style.top = '50%';
+      iframe.style.left = '50%';
+      iframe.style.transform = 'translate(-50%, -50%)';
+      iframe.style.width = '90%';
+      iframe.style.height = '80%';
+      iframe.style.zIndex = '1001';
+      iframe.style.border = '2px solid #004080';
+      iframe.style.borderRadius = '10px';
+      iframe.style.backgroundColor = 'white';
+      iframe.id = 'uploadModalFrame';
+
+      const overlay = document.createElement('div');
+      overlay.id = 'uploadOverlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+      overlay.style.zIndex = '1000';
+      overlay.onclick = () => {
+        document.body.removeChild(overlay);
+        document.body.removeChild(iframe);
+      };
+
+      document.body.appendChild(overlay);
+      document.body.appendChild(iframe);
+    }` : '');
       const win = window.open(url, '_blank');
       if (win) win.focus();
     }
