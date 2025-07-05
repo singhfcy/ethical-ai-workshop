@@ -1,0 +1,96 @@
+//upload-participant-list.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Participant List</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f8fb;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      color: #004080;
+    }
+    .container {
+      background: white;
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #status {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    a.sheet-link {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 10px 16px;
+      background-color: #004080;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    .error {
+      color: red;
+    }
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Upload Participant List</h1>
+    <div id="g_id_onload"
+         data-client_id="1050690553370-s73vnq61r6tp9g93qi3225j8uf2285ju.apps.googleusercontent.com"
+         data-auto_prompt="false"
+         data-callback="handleSignIn">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="filled_blue"
+         data-text="continue_with"
+         data-shape="pill">
+    </div>
+
+    <div id="status"></div>
+    <div id="link"></div>
+  </div>
+
+  <script>
+    function handleSignIn(response) {
+      const idToken = response.credential;
+      fetch("https://script.google.com/macros/s/AKfycbxDLwtIKcSp6AmV-tPvYEde_MLih-InXhNPUYKAk7MyUbXDR8_AnMcCGlZToHnt9F_9/exec", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: "idToken=" + encodeURIComponent(idToken)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success" || data.status === "exists") {
+          document.getElementById("status").innerHTML = `✅ ${data.message}`;
+          document.getElementById("status").className = "success";
+          document.getElementById("link").innerHTML = `<a class="sheet-link" href="${data.url}" target="_blank">Open Your Participant Sheet</a>`;
+        } else {
+          document.getElementById("status").innerHTML = `❌ ${data.message}`;
+          document.getElementById("status").className = "error";
+        }
+      })
+      .catch(err => {
+        document.getElementById("status").innerHTML = `❌ Error: ${err.message}`;
+        document.getElementById("status").className = "error";
+      });
+    }
+  </script>
+</body>
+</html>
